@@ -26,11 +26,12 @@ use std::collections::HashMap;
 pub(crate) struct Parser {}
 
 pub(crate) type Directives = HashMap<String, Vec<Value>>;
-static DIRECTIVES: [&str; 10] = [
+static DIRECTIVES: [&str; 11] = [
     "#ctx_before",
     "#ctx_after",
     "#select_labels",
     "#ext",
+    "#strict",
     // query execution directives
     "#batch_size",
     "#batch_records",
