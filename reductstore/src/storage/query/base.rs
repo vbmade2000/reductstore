@@ -65,8 +65,67 @@ pub(crate) struct QueryOptions {
     pub ext: Option<Value>,
 }
 
+// Extract value of #strict directive from when condition
+fn get_strict_from_when(when: Option<Value>) -> Option<bool> {
+    // Return None if "when" condition is not supplied at all
+    if when.is_none() {
+        println!("%%%%%%%%%% when is none");
+        return None;
+    }
+
+    let when = when.unwrap();
+
+    // Return None if #strict directive is not present in when object
+    let strict_directive = when["#strict"].as_object();
+    if strict_directive.is_none() {
+        println!("%%%%%%%%%% #strict is none");
+        return None;
+    }
+
+    // Return None if "$eq" is not present in #strict directive object
+    let strict_directive = strict_directive.unwrap();
+    let strict_value = strict_directive["$eq"].as_str();
+    if strict_value.is_none() {
+        println!("%%%%%%%%%% $eq is none");
+        return None;
+    }
+
+    // Return None if "$eq" contains invalid value
+    let strict_value = strict_value.unwrap();
+    if strict_value != "true" && strict_value != "false" {
+        println!("%%%%%%%%%% $eq is invalid");
+        return None;
+    }
+
+    if strict_value == "true" {
+        Some(true)
+    } else {
+        Some(false)
+    }
+}
+
 impl From<QueryEntry> for QueryOptions {
     fn from(query: QueryEntry) -> QueryOptions {
+        // Extract strict from when condition and from query parameters
+        let strict_from_when = get_strict_from_when(query.when.clone());
+        let strict_from_query = query.strict;
+
+        let strict = if strict_from_when.is_some() && strict_from_query.is_none() {
+            strict_from_when.unwrap()
+        } else if strict_from_when.is_none() && strict_from_query.is_some() {
+            strict_from_query.unwrap()
+        } else if strict_from_when.is_some() && strict_from_query.is_some() {
+            // TODO: Which value should be considered if both are present?
+            false
+        } else {
+            false
+        };
+
+        println!(
+            "//////////////////////////// QueryOptions::from called - when_strict - {:?}",
+            strict
+        );
+
         QueryOptions {
             ttl: Duration::from_secs(query.ttl.unwrap_or(Self::default().ttl.as_secs())),
             continuous: query.continuous.unwrap_or(false),
