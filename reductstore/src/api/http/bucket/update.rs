@@ -16,6 +16,7 @@ pub(super) async fn update_bucket(
     headers: HeaderMap,
     settings: BucketSettingsAxum,
 ) -> Result<(), HttpError> {
+    println!("update_bucket called");
     let components = keeper
         .get_with_permissions(&headers, FullAccessPolicy {})
         .await?;

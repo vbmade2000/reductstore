@@ -36,6 +36,11 @@ pub(super) async fn read_batched_records(
     headers: HeaderMap,
     method: MethodExtractor,
 ) -> Result<impl IntoResponse, HttpError> {
+    println!("read_batched_records called");
+    println!("read_batched_records called params - {:?}", &params);
+    println!("read_batched_records called path - {:?}", &path);
+    // println!("read_batched_records called method - {}", &method  );
+    println!("read_batched_records called headers - {:?}", &headers);
     let bucket_name = path.get("bucket_name").unwrap();
     let components = keeper
         .get_with_permissions(

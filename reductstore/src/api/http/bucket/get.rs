@@ -15,6 +15,8 @@ pub(super) async fn get_bucket(
     Path(bucket_name): Path<String>,
     headers: HeaderMap,
 ) -> Result<FullBucketInfoAxum, HttpError> {
+    println!("get_bucket called");
+
     let components = keeper
         .get_with_permissions(
             &headers,

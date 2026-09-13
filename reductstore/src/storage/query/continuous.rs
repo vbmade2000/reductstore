@@ -29,9 +29,12 @@ impl ContinuousQuery {
         options: QueryOptions,
         io_defaults: IoConfig,
     ) -> Result<Self, ReductError> {
+        println!("ContinuousQuery::try_new called");
         if !options.continuous {
             panic!("Continuous query must be continuous");
         }
+
+        println!("ContinuousQuery::try_new called - step1");
 
         Ok(ContinuousQuery {
             entry_name: entry_name.clone(),

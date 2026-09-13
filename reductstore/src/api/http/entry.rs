@@ -127,7 +127,10 @@ async fn query_entry_router(
     path: Path<HashMap<String, String>>,
     request: QueryEntryAxum,
 ) -> Response<Body> {
+    println!("query_entry_router called");
     let request = request.0;
+    println!("query_entry_router called with {:?}", &request);
+    println!("===============================");
     match request.query_type {
         QueryType::Query => read_query_json(keeper, path, request, headers)
             .await
@@ -167,18 +170,22 @@ async fn read_entry_router(
     headers: HeaderMap,
     method: MethodExtractor,
 ) -> Response<Body> {
+    println!("read_entry_router called");
     if let Some(path) = strip_route_suffix(&path, "/batch") {
+        println!("read_entry_router called with /batch");
         return read_batched_records(keeper, path, Query(params), headers, method)
             .await
             .into_response();
     }
 
     if let Some(path) = strip_route_suffix(&path, "/q") {
+        println!("read_entry_router called with /q");
         return read_query::read_query(keeper, path, Query(params), headers)
             .await
             .into_response();
     }
 
+    println!("read_entry_router called with no suffix");
     read_record(keeper, Path(path), Query(params), headers, method)
         .await
         .into_response()
@@ -191,6 +198,8 @@ async fn write_entry_router(
     Query(params): Query<HashMap<String, String>>,
     body: Body,
 ) -> Response<Body> {
+    println!("write_entry_router called");
+    println!("write_entry_router called body - {:?}", &body);
     if let Some(path) = strip_route_suffix(&path, "/batch") {
         return write_batched_records(keeper, headers, path, body)
             .await
@@ -198,15 +207,22 @@ async fn write_entry_router(
     }
 
     if let Some(path) = strip_route_suffix(&path, "/q") {
+        println!("write_entry_router called with /q");
         let body = match to_bytes(body, usize::MAX).await {
             Ok(body) => body,
             Err(e) => return HttpError::from(e).into_response(),
         };
 
+        println!("Step1");
+
         let request: QueryEntry = match serde_json::from_slice(&body) {
             Ok(request) => request,
             Err(e) => return HttpError::from(e).into_response(),
         };
+        println!("Step2");
+        println!("write_entry_router called with /q - {:?}", &request);
+        println!("===============================");
+
         return query_entry_router(keeper, headers, path, QueryEntryAxum(request)).await;
     }
 
@@ -222,6 +238,7 @@ async fn update_entry_router(
     Query(params): Query<HashMap<String, String>>,
     body: Body,
 ) -> Response<Body> {
+    println!("update_entry_router called");
     if let Some(path) = strip_route_suffix(&path, "/batch") {
         return update_batched_records(keeper, headers, path, body)
             .await
@@ -240,6 +257,7 @@ async fn remove_entry_dispatcher(
     Query(params): Query<HashMap<String, String>>,
     body: Body,
 ) -> Response<Body> {
+    println!("remove_entry_dispatcher called");
     if let Some(path) = strip_route_suffix(&path, "/batch") {
         return remove_batched_records(keeper, headers, path, body)
             .await
@@ -263,6 +281,7 @@ async fn rename_entry_dispatcher(
     Path(path): Path<HashMap<String, String>>,
     body: Body,
 ) -> Response<Body> {
+    println!("rename_entry_dispatcher called");
     if let Some(path) = strip_route_suffix(&path, "/rename") {
         let body = match to_bytes(body, usize::MAX).await {
             Ok(body) => body,

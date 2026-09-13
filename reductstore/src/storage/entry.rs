@@ -148,13 +148,19 @@ impl Entry {
     /// * `u64` - The query ID.
     /// * `HTTPError` - The error if any.
     pub async fn query(&self, mut query_parameters: QueryEntry) -> Result<u64, ReductError> {
+        println!("query called");
+        println!("query called with {:?}", &query_parameters);
         self.system_behavior
             .apply_default_query_filters(&mut query_parameters);
+        println!("===============================");
+
         let (start, stop) = self.get_query_time_range(&query_parameters).await?;
         let id = next_query_id();
         let block_manager = Arc::clone(&self.block_manager);
-
+        println!("query called - step1");
         let options: QueryOptions = query_parameters.into();
+        println!("=> query called - {:?}", &options);
+        println!("query called - step1.1");
         let query = build_query(
             self.name.clone(),
             start,
@@ -162,11 +168,11 @@ impl Entry {
             options.clone(),
             self.cfg.io_conf.clone(),
         )?;
-
+        println!("query called - step2");
         let io_settings = query.as_ref().io_settings().clone();
         let (rx, task_handle) =
             spawn_query_task(id, self.task_group(), query, options.clone(), block_manager);
-
+        println!("query called - step3");
         self.queries.write().await?.insert(
             id,
             QueryHandle {
@@ -177,7 +183,7 @@ impl Entry {
                 io_settings,
             },
         );
-
+        println!("query called - step4");
         Ok(id)
     }
 

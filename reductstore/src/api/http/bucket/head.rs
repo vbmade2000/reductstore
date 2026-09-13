@@ -15,6 +15,8 @@ pub(super) async fn head_bucket(
     Path(bucket_name): Path<String>,
     headers: HeaderMap,
 ) -> Result<(), HttpError> {
+    println!("head_bucket called");
+
     let components = keeper
         .get_with_permissions(&headers, AuthenticatedPolicy {})
         .await?;

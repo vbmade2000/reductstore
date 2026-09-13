@@ -22,6 +22,8 @@ pub(super) async fn query(
     Path(path): Path<HashMap<String, String>>,
     request: QueryEntryAxum,
 ) -> Result<axum::response::Response, HttpError> {
+    println!("query called");
+
     let request = request.0;
     let bucket_name = path.get("bucket_name").unwrap();
 

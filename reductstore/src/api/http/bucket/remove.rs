@@ -16,6 +16,7 @@ pub(super) async fn remove_bucket(
     Path(bucket_name): Path<String>,
     headers: HeaderMap,
 ) -> Result<(), HttpError> {
+    println!("remove_bucket called");
     let components = keeper
         .get_with_permissions(&headers, FullAccessPolicy {})
         .await?;

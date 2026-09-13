@@ -94,6 +94,15 @@ impl<R: FilterRecord> RecordFilter<R> for WhenFilter<R> {
             }
         };
 
+        println!(
+            ">>>>>>>>>>>>>>>>>>>>>> WhenFilter::filter - condition. - {:?}",
+            self.condition
+        );
+        println!(
+            ">>>>>>>>>>>>>>>>>>>>>> WhenFilter::filter - result: {}",
+            result
+        );
+
         if self.ctx_after.check(result, record.timestamp()) {
             let drained = self.ctx_buffer.drain(..);
             let filtered = drained

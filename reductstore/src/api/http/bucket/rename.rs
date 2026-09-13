@@ -17,6 +17,7 @@ pub(super) async fn rename_bucket(
     headers: HeaderMap,
     request: Json<RenameBucket>,
 ) -> Result<(), HttpError> {
+    println!("rename_bucket called");
     let components = keeper
         .get_with_permissions(&headers, FullAccessPolicy {})
         .await?;

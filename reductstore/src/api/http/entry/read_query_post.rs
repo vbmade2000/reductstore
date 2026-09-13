@@ -19,6 +19,9 @@ pub(super) async fn read_query_json(
     request: QueryEntry,
     headers: HeaderMap,
 ) -> Result<QueryInfoAxum, HttpError> {
+    println!("read_query_json called");
+    println!("read_query_json called with {:?}", &request);
+    println!("===============================");
     let bucket_name = path.get("bucket_name").unwrap();
     let entry_name = path.get("entry_name").unwrap();
     let components = keeper
@@ -29,19 +32,25 @@ pub(super) async fn read_query_json(
             },
         )
         .await?;
+    println!("read_query_json called - step1");
 
     let bucket = components
         .storage
         .get_bucket(bucket_name)
         .await?
         .upgrade()?;
+
+    println!("read_query_json called - step2");
+
     let entry = bucket.get_entry(entry_name).await?.upgrade()?;
     let id = entry.query(request.clone()).await?;
+    println!("read_query_json called - step3");
 
     components
         .ext_repo
         .register_query(id, bucket_name, entry_name, request)
         .await?;
+    println!("read_query_json called - step4");
 
     Ok(QueryInfoAxum::from(QueryInfo { id }))
 }

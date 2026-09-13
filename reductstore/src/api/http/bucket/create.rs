@@ -17,6 +17,7 @@ pub(super) async fn create_bucket(
     headers: HeaderMap,
     settings: BucketSettingsAxum,
 ) -> Result<(), HttpError> {
+    println!("create_bucket called");
     let components = keeper
         .get_with_permissions(&headers, FullAccessPolicy {})
         .await?;
